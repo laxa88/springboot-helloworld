@@ -1,8 +1,12 @@
 package com.wyleong.myspringboot.controller
 
+import com.fasterxml.jackson.databind.ObjectMapper
 import com.wyleong.myspringboot.model.Bank
 import com.wyleong.myspringboot.service.BankService
+import org.junit.jupiter.api.DisplayName
+import org.junit.jupiter.api.Nested
 import org.junit.jupiter.api.Test
+import org.junit.jupiter.api.TestInstance
 import org.mockito.Mockito
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest
@@ -10,6 +14,7 @@ import org.springframework.boot.test.mock.mockito.MockBean
 import org.springframework.http.MediaType
 import org.springframework.test.web.servlet.MockMvc
 import org.springframework.test.web.servlet.get
+import org.springframework.test.web.servlet.post
 import org.springframework.web.client.RestTemplate
 
 /**
@@ -30,7 +35,8 @@ class BankControllerTest2(
     // This is just an alternate way to write commented code below
     @MockBean @Autowired val bankService: BankService,
     @MockBean @Autowired val restTemplate: RestTemplate,
-    @Autowired val mockMvc: MockMvc
+    @Autowired val mockMvc: MockMvc,
+    @Autowired val objectMapper: ObjectMapper
 ) {
 
     // @MockBean
@@ -42,24 +48,86 @@ class BankControllerTest2(
     // @Autowired
     // lateinit var mockMvc: MockMvc
 
-    @Test
-    fun `should get list of banks`() {
-        // given
-        Mockito.`when`(bankService.getBanks()).thenReturn(
-            listOf(
-                Bank("abc1", 1.0, 11),
-                Bank("abc2", 2.0, 22),
-                Bank("abc3", 3.0, 33),
-            )
-        )
+    val baseUrl = "/api/banks"
 
-        // when/then
-        mockMvc.get("/api/banks")
-            .andDo { print() }
-            .andExpect {
-                status { isOk() }
-                content { contentType(MediaType.APPLICATION_JSON) }
-                jsonPath("$[0].accountNumber") { value("abc1") }
+    @Nested
+    @DisplayName("GET /api/banks")
+    @TestInstance(TestInstance.Lifecycle.PER_CLASS)
+    inner class GetBanks {
+
+        @Test
+        fun `should return list of banks`() {
+            // given
+            Mockito.`when`(bankService.getBanks()).thenReturn(
+                listOf(
+                    Bank("abc1", 1.0, 11),
+                    Bank("abc2", 2.0, 22),
+                    Bank("abc3", 3.0, 33),
+                )
+            )
+
+            // when/then
+            mockMvc.get(baseUrl)
+                .andDo { print() }
+                .andExpect {
+                    status { isOk() }
+                    content { contentType(MediaType.APPLICATION_JSON) }
+                    jsonPath("$[0].accountNumber") { value("abc1") }
+                }
+        }
+    }
+
+    @Nested
+    @DisplayName("POST /api/banks")
+    @TestInstance(TestInstance.Lifecycle.PER_CLASS)
+    inner class PostNewBank {
+
+        @Test
+        fun `should add the new bank`() {
+            // given
+            val newBank = Bank("acc123", 31.415, 2)
+
+            Mockito.`when`(bankService.addBank(newBank)).thenReturn(newBank)
+
+            // when
+            val performPost = mockMvc.post(baseUrl) {
+                contentType = MediaType.APPLICATION_JSON
+                content = objectMapper.writeValueAsString(newBank)
             }
+
+            // then
+            performPost
+                .andDo { print() }
+                .andExpect {
+                    status { isCreated() }
+                    content {
+                        contentType(MediaType.APPLICATION_JSON)
+                        json(objectMapper.writeValueAsString(newBank))
+                    }
+                }
+        }
+
+        @Test
+        fun `should return BAD REQUEST if bank with given account number already exists`() {
+            // given
+            val invalidBank = Bank("1234", 1.0, 1)
+
+            Mockito.`when`(bankService.addBank(invalidBank)).thenThrow(
+                IllegalArgumentException("Dummy exception message")
+            )
+
+            // when
+            val performPost = mockMvc.post(baseUrl) {
+                contentType = MediaType.APPLICATION_JSON
+                content = objectMapper.writeValueAsString(invalidBank)
+            }
+
+            // then
+            performPost
+                .andDo { print() }
+                .andExpect {
+                    status { isBadRequest() }
+                }
+        }
     }
 }
