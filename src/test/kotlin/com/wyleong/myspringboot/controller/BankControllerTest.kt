@@ -165,7 +165,6 @@ internal class BankControllerTest @Autowired constructor(
         @Test
         fun `should update an existing bank`() {
             // given
-            val accountNumber = 1234
             val updatedBank = Bank("1234", 1.0, 2)
 
             // when
