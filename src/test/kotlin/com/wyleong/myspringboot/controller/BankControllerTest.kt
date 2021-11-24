@@ -20,6 +20,20 @@ import org.springframework.test.web.servlet.patch
 import org.springframework.test.web.servlet.post
 import org.springframework.test.web.servlet.setup.MockMvcBuilders
 
+/**
+ * Compared to BankControllerTest2, using @SpringBootTest will setup the
+ * application context for the test, and we'll get to test the web/service/repo
+ * layers without having to mock them individually in this test class.
+ *
+ * Pro: Tests reflect the actual application behaviour more closely.
+ * Con: Setup and tests are slower.
+ *
+ * Notes:
+ * - We still need to mock dependency, but in this case, we only need to mock the DataSource,
+ *  because the service ultimately manipulates the data provided by the Repository (datasource).
+ * - Using `@Autowired constructor` allows to Autowire all the constructor params in one go.
+ *  Otherwise, just use `@Autowire val xxx` individually.
+ */
 @SpringBootTest
 internal class BankControllerTest @Autowired constructor(
     val objectMapper: ObjectMapper
