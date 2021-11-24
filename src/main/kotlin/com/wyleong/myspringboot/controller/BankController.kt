@@ -4,6 +4,7 @@ import com.wyleong.myspringboot.model.Bank
 import com.wyleong.myspringboot.service.BankService
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
+import org.springframework.web.bind.annotation.DeleteMapping
 import org.springframework.web.bind.annotation.ExceptionHandler
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.PatchMapping
@@ -43,4 +44,9 @@ class BankController(
     @PatchMapping
     fun patchBank(@RequestBody bank: Bank) =
         service.updateBank(bank)
+
+    @DeleteMapping("/{accountNumber}")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    fun deleteBank(@PathVariable accountNumber: String) =
+        service.deleteBank(accountNumber)
 }
