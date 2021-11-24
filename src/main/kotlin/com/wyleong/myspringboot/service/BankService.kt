@@ -12,4 +12,6 @@ class BankService(private val dataSource: BankDataSource) {
     fun getBank(accountNumber: String): Bank = dataSource.retrieveBank(accountNumber)
 
     fun addBank(bank: Bank) = dataSource.createBank(bank)
+
+    fun updateBank(bank: Bank) = dataSource.updateBank(bank)
 }
