@@ -26,15 +26,21 @@ import org.springframework.web.client.RestTemplate
  * - We can use @MockBean to magically inject a mock dependencies
  */
 @WebMvcTest(BankController::class)
-class BankControllerTest2 {
-    @MockBean
-    lateinit var bankService: BankService
+class BankControllerTest2(
+    // This is just an alternate way to write commented code below
+    @MockBean @Autowired val bankService: BankService,
+    @MockBean @Autowired val restTemplate: RestTemplate,
+    @Autowired val mockMvc: MockMvc
+) {
 
-    @MockBean
-    lateinit var restTemplate: RestTemplate
-
-    @Autowired
-    lateinit var mockMvc: MockMvc
+    // @MockBean
+    // lateinit var bankService: BankService
+    //
+    // @MockBean
+    // lateinit var restTemplate: RestTemplate
+    //
+    // @Autowired
+    // lateinit var mockMvc: MockMvc
 
     @Test
     fun `should get list of banks`() {
