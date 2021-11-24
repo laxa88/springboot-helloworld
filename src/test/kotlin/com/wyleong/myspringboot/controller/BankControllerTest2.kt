@@ -3,6 +3,7 @@ package com.wyleong.myspringboot.controller
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.wyleong.myspringboot.model.Bank
 import com.wyleong.myspringboot.service.BankService
+import org.assertj.core.api.Assertions.*
 import org.junit.jupiter.api.DisplayName
 import org.junit.jupiter.api.Nested
 import org.junit.jupiter.api.Test
@@ -16,6 +17,7 @@ import org.springframework.test.web.servlet.MockMvc
 import org.springframework.test.web.servlet.get
 import org.springframework.test.web.servlet.post
 import org.springframework.web.client.RestTemplate
+import javax.validation.Validation
 
 /**
  * This way of testing mocks out the dependencies (service, restTemplate Beans),
@@ -128,6 +130,41 @@ class BankControllerTest2(
                 .andExpect {
                     status { isBadRequest() }
                 }
+        }
+
+        @Test
+        fun `should validate fields via endpoint`() {
+            // given
+            val invalidBank = Bank("1234", 1.0, 1, codeName = "ab")
+
+            // when
+            val performPost = mockMvc.post(baseUrl) {
+                contentType = MediaType.APPLICATION_JSON
+                content = objectMapper.writeValueAsString(invalidBank)
+            }
+
+            // then
+            performPost
+                .andDo { print() }
+                .andExpect {
+                    status { isBadRequest() }
+                }
+        }
+
+        @Test
+        fun `should validate fields via validator`() {
+            // given
+            val invalidBank = Bank("1234", 1.0, 0, codeName = "ab")
+            val validator = Validation.buildDefaultValidatorFactory().validator
+
+            // when
+            val violations = validator.validate(invalidBank)
+
+            // then
+            // NOTE: these are expensive to assert
+            assertThat(violations.count()).isEqualTo(2)
+            assertThat(violations).anyMatch { it.message == "FEE_MUST_BE_POSITIVE" }
+            assertThat(violations).anyMatch { it.message == "INVALID_LENGTH" }
         }
     }
 }
