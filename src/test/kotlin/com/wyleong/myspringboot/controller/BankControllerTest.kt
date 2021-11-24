@@ -1,13 +1,15 @@
 package com.wyleong.myspringboot.controller
 
 import com.fasterxml.jackson.databind.ObjectMapper
+import com.wyleong.myspringboot.datasource.mock.MockBankDataSource
 import com.wyleong.myspringboot.model.Bank
+import com.wyleong.myspringboot.service.BankService
+import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.DisplayName
 import org.junit.jupiter.api.Nested
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.TestInstance
 import org.springframework.beans.factory.annotation.Autowired
-import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc
 import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.http.MediaType
 import org.springframework.test.annotation.DirtiesContext
@@ -16,15 +18,23 @@ import org.springframework.test.web.servlet.delete
 import org.springframework.test.web.servlet.get
 import org.springframework.test.web.servlet.patch
 import org.springframework.test.web.servlet.post
+import org.springframework.test.web.servlet.setup.MockMvcBuilders
 
 @SpringBootTest
-@AutoConfigureMockMvc
 internal class BankControllerTest @Autowired constructor(
-    val mockMvc: MockMvc,
     val objectMapper: ObjectMapper
 ) {
 
     val baseUrl = "/api/banks"
+
+    lateinit var mockMvc: MockMvc
+
+    @BeforeEach
+    fun beforeEach() {
+        mockMvc = MockMvcBuilders
+            .standaloneSetup(BankController(BankService(MockBankDataSource())))
+            .build()
+    }
 
     @Nested
     @DisplayName("GET /api/banks")
