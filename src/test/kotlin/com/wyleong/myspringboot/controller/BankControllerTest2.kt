@@ -14,7 +14,9 @@ import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest
 import org.springframework.boot.test.mock.mockito.MockBean
 import org.springframework.http.MediaType
 import org.springframework.test.web.servlet.MockMvc
+import org.springframework.test.web.servlet.delete
 import org.springframework.test.web.servlet.get
+import org.springframework.test.web.servlet.patch
 import org.springframework.test.web.servlet.post
 import org.springframework.web.client.RestTemplate
 import javax.validation.Validation
@@ -211,6 +213,97 @@ class BankControllerTest2(
             assertThat(violations.count()).isEqualTo(2)
             assertThat(violations).anyMatch { it.message == "FEE_MUST_BE_POSITIVE" }
             assertThat(violations).anyMatch { it.message == "INVALID_LENGTH" }
+        }
+    }
+
+    @Nested
+    @DisplayName("PATCH /api/banks")
+    @TestInstance(TestInstance.Lifecycle.PER_CLASS)
+    inner class PatchExistingBank {
+
+        @Test
+        fun `should update an existing bank`() {
+            // given
+            val updatedBank = Bank("1234", 1.0, 2)
+
+            Mockito.`when`(bankService.updateBank(updatedBank)).thenReturn(updatedBank)
+
+            // when
+            val performPatch = mockMvc.patch(baseUrl) {
+                contentType = MediaType.APPLICATION_JSON
+                content = objectMapper.writeValueAsString(updatedBank)
+            }
+
+            // then
+            performPatch
+                .andDo { print() }
+                .andExpect {
+                    status { isOk() }
+                    content {
+                        contentType(MediaType.APPLICATION_JSON)
+                        json(objectMapper.writeValueAsString(updatedBank))
+                    }
+                }
+        }
+
+        @Test
+        fun `should return NOT FOUND if no bank with given account number exists`() {
+            // given
+            val invalidBank = Bank("does_not_exist", 1.0, 1)
+
+            Mockito.`when`(bankService.updateBank(invalidBank)).thenThrow(
+                NoSuchElementException("Dummy exception message")
+            )
+
+            // when
+            val performPatch = mockMvc.patch(baseUrl) {
+                contentType = MediaType.APPLICATION_JSON
+                content = objectMapper.writeValueAsString(invalidBank)
+            }
+
+            // then
+            performPatch
+                .andDo { print() }
+                .andExpect { status { isNotFound() } }
+        }
+    }
+
+    @Nested
+    @DisplayName("DELETE /api/banks/{accountNumber}")
+    @TestInstance(TestInstance.Lifecycle.PER_CLASS)
+    inner class DeleteExistingBank {
+
+        @Test
+        fun `should delete the bank with the given account number`() {
+            // given
+            val accountNumber = "1234"
+
+            Mockito.doNothing().`when`(bankService).deleteBank(accountNumber)
+
+            // when/then
+            mockMvc.delete("$baseUrl/$accountNumber")
+                .andDo { print() }
+                .andExpect {
+                    status { isNoContent() }
+                }
+        }
+
+        @Test
+        fun `should return NOT FOUND if no bank with given account number exists`() {
+            // given
+            val invalidAccountNumber = "does_not_exist"
+
+            Mockito.`when`(bankService.deleteBank(invalidAccountNumber)).thenThrow(
+                NoSuchElementException("Dummy exception message")
+            )
+
+            // when
+            val deleteRequest = mockMvc.delete("$baseUrl/$invalidAccountNumber")
+
+            // then
+            deleteRequest
+                .andDo { print() }
+                .andExpect { status { isNotFound() } }
         }
     }
 }
