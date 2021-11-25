@@ -25,8 +25,12 @@ import javax.validation.Validation
  * layers just invokes the service, and the service/repository is where the
  * business logic is usually at.
  *
- * Pro: Super fast, because we don't setup the Springboot Application.
- * Con: We have to mock out all Bean dependencies.
+ * Pro:
+ * - Super fast, due to test slicing (skips Springboot Application setup).
+ *
+ * Con:
+ * - We have to mock out all Bean dependencies.
+ * - Does not assert data layer state changes.
  *
  * Notes:
  * - The @WebMvcTest filters a specific controller for this test
@@ -75,6 +79,49 @@ class BankControllerTest2(
                     status { isOk() }
                     content { contentType(MediaType.APPLICATION_JSON) }
                     jsonPath("$[0].accountNumber") { value("abc1") }
+                }
+        }
+    }
+
+    @Nested
+    @DisplayName("GET /api/banks/{accountNumber")
+    @TestInstance(TestInstance.Lifecycle.PER_CLASS)
+    inner class GetBank {
+        @Test
+        fun `should return the bank with given account number`() {
+            // given
+            val accountNumber = 1234
+
+            Mockito.`when`(bankService.getBank("1234")).thenReturn(
+                Bank("abcd", 3.0, 33)
+            )
+
+            // when/then
+            mockMvc.get("$baseUrl/$accountNumber")
+                .andDo { print() }
+                .andExpect {
+                    status { isOk() }
+                    content { contentType(MediaType.APPLICATION_JSON) }
+                    jsonPath("$.accountNumber") { value("abcd") }
+                    jsonPath("$.trust") { value("3.0") }
+                    jsonPath("$.transactionFee") { value("33") }
+                }
+        }
+
+        @Test
+        fun `should return NOT FOUND if the account number does not exist`() {
+            // given
+            val accountNumber = 1234
+
+            Mockito.`when`(bankService.getBank("1234")).thenThrow(
+                NoSuchElementException("dummy error message")
+            )
+
+            // when/then
+            mockMvc.get("$baseUrl/$accountNumber")
+                .andDo { print() }
+                .andExpect {
+                    status { isNotFound() }
                 }
         }
     }
@@ -161,7 +208,6 @@ class BankControllerTest2(
             val violations = validator.validate(invalidBank)
 
             // then
-            // NOTE: these are expensive to assert
             assertThat(violations.count()).isEqualTo(2)
             assertThat(violations).anyMatch { it.message == "FEE_MUST_BE_POSITIVE" }
             assertThat(violations).anyMatch { it.message == "INVALID_LENGTH" }

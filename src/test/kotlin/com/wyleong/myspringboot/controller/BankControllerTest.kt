@@ -25,8 +25,12 @@ import org.springframework.test.web.servlet.setup.MockMvcBuilders
  * application context for the test, and we'll get to test the web/service/repo
  * layers without having to mock them individually in this test class.
  *
- * Pro: Tests reflect the actual application behaviour more closely.
- * Con: Setup and tests are slower.
+ * Pro:
+ * - Can test service layer and data layer.
+ * - Can assert that data layer state changes.
+ *
+ * Con:
+ * - Tests are slower.
  *
  * Notes:
  * - We still need to mock dependency, but in this case, we only need to mock the DataSource,
@@ -77,7 +81,7 @@ internal class BankControllerTest @Autowired constructor(
             val accountNumber = 1234
 
             // when/then
-            mockMvc.get("/api/banks/$accountNumber")
+            mockMvc.get("$baseUrl/$accountNumber")
                 .andDo { print() }
                 .andExpect {
                     status { isOk() }
