@@ -2,6 +2,9 @@ plugins {
     id("org.springframework.boot")
     id("io.spring.dependency-management")
     kotlin("jvm")
+
+    // Magically resolves @SpringBootApplication "may not be final" error
+    kotlin("plugin.spring")
 }
 
 group = "com.example"
