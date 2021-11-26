@@ -13,8 +13,6 @@ import org.springframework.boot.runApplication
  *
  * `scanBasePackages` specifies the parent package, so the requisite MyService
  * can be detected.
- *
- * TODO: Why do need to use `open` here, but not in MySpringBootApplication example?
  */
 @SpringBootApplication(scanBasePackages = ["com.example.multimodule"])
 class DemoApplication
