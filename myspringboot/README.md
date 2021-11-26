@@ -26,7 +26,7 @@ Misc
 - [ ] Test database layer
 - [ ] Containerize app and database
 - [ ] Test Webflux web layer
-- [ ] Setup multiple module projects (https://spring.io/guides/gs/multi-module/)
+- [x] Setup multiple module projects (https://spring.io/guides/gs/multi-module/)
 - [ ] Dev and prod configurations
 - [ ] Deploy via CI
 - [ ] Environment variables in local / CI
