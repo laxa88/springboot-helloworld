@@ -7,9 +7,8 @@ import org.springframework.data.relational.core.mapping.Table
 data class Student(
 
     // `@Id` enables repository.findById() to work magically
-    @Id val id: Int,
+    @Id var id: Int? = null,
 
     val name: String,
     val course: String,
-    val emailId: String,
 )
