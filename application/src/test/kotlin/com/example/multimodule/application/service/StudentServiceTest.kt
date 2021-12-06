@@ -8,12 +8,14 @@ import org.junit.jupiter.api.Assertions.*
 import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.autoconfigure.data.r2dbc.DataR2dbcTest
+import org.springframework.test.context.ActiveProfiles
 import org.testcontainers.containers.PostgreSQLContainer
 import org.testcontainers.junit.jupiter.Container
 import org.testcontainers.junit.jupiter.Testcontainers
 
 @Testcontainers
 @DataR2dbcTest
+@ActiveProfiles("test") // reads from application-{profile_name}.yml
 internal class StudentServiceTest {
 
     @Autowired
@@ -21,8 +23,11 @@ internal class StudentServiceTest {
 
     @Container
     val container = PostgreSQLContainer<Nothing>("postgres").apply {
-        withDatabaseName("r2dbc:tc:postgresql://localhost:1234/school?TC_IMAGE_TAG=5.7.34")
-        withExposedPorts(1234)
+        // TC_IMAGE_TAG is required but value can be empty.
+        // The value is the docker image version, e.g. "bullseye" (from "postgres:bullseye")
+        withDatabaseName("r2dbc:tc:postgresql://localhost:1111/school?TC_IMAGE_TAG=")
+
+        withExposedPorts(1111)
         withUsername("postgres")
         withPassword("password")
     }
@@ -34,7 +39,6 @@ internal class StudentServiceTest {
 
     @Test
     fun `should save`() {
-        // FIXME: repository fails to connect "localhost:1234"??
         runBlocking {
             studentRepository.save(Student(3, "dName", "dCourse"))
         }

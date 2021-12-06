@@ -1,7 +1,5 @@
 spring:
-  datasource:
-    url: r2dbc:tc:postgresql://localhost:1111/school?TC_IMAGE_TAG=5.7.34
-    driver-class-name: org.testcontainers.jdbc.ContainerDatabaseDriver
-
   r2dbc:
-    url: r2dbc:tc:postgresql://localhost:1111/school?TC_IMAGE_TAG=5.7.34
+    url: r2dbc:tc:postgresql://localhost:1111/school?TC_IMAGE_TAG=
+    username: postgres
+    password: password
