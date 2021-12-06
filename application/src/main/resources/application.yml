@@ -1,2 +1,32 @@
+# Just to test that configs can be loaded into MyService external library
 myconfig:
-    my-message: main message goes here
+  my-message: main message goes here
+
+server:
+  port: 8084
+
+logging:
+  file:
+    name: /var/app/current/log/my-logging.log
+  pattern:
+    console: "%d %-5level %-50logger{50} : %msg%n"
+    file: "%d %-5level [%thread] %logger : %msg%n"
+#  level:
+#    io.r2dbc: DEBUG
+#    org.springframework.boot: DEBUG
+#    root: DEBUG
+#    org.springframework.boot.r2dbc: DEBUG
+#    org.springframework.r2dbc: DEBUG
+
+# Postgres config
+spring:
+  r2dbc:
+    url: r2dbc:postgresql://localhost:1234/school
+    username: postgres
+    password: password
+
+# Flyway migration folder path
+r2dbc:
+  migrate:
+    resources-paths:
+      - classpath:/db.migrations/*.sql

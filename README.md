@@ -1,3 +1,21 @@
+## Projects
+
+- application
+- library
+- myspringboot
+
+`myspringboot` demonstrates SpringBoot app with a basic controller-service-datasource layer. There are two example datasource layers: Mocked, and network. The purpose of this project is to demonstrate different ways to write Controller, Service and Datasource tests.
+
+`library` is a dummy submodule within this project, to test that it can be used as an external library. This is demonstrated in `application` HomeController, which displays the message in `/hello` endpoint.
+
+`application` is another SpringBoot app with controller-service-datasource that includes an actual database. This project requires the postgres to be run in docker, via `docker-compose up`. The `db.migrations` folder contains Flyway SQL scripts that will automatically run to inject initial data.
+
+### Setup
+
+- Run `docker-compose up` to spin up a Postgres DB, which is used by `application`.
+- The SpringBoot app relies on `application.yml` for the DB config (running on port `1234`).
+- Run `DemoApplication.kt` to start the server.
+
 ## Tutorial Reference
 
 Thenewboston tutorial series:
@@ -13,6 +31,11 @@ Reactive programming with Spring Boot / Webflux
 
 * https://www.youtube.com/watch?v=IK26KdGRl48&list=PLnXn1AViWyL70R5GuXt_nIDZytYBnvBdd&index=1
 * https://www.youtube.com/watch?v=qwF6v6FN_Uc&t=145s (Getting started with R2DBC)
+
+R2DBC / Database
+
+* https://thomasandolf.medium.com/r2dbc-getting-started-d0afcfc05be2
+* https://wkrzywiec.medium.com/database-in-a-docker-container-how-to-start-and-whats-it-about-5e3ceea77e50
 
 Misc
 

@@ -16,9 +16,18 @@ repositories {
 }
 
 dependencies {
+    // Import local dependencies
     implementation(project(":library"))
 
-    implementation("org.springframework.boot:spring-boot-starter-actuator")
-    implementation("org.springframework.boot:spring-boot-starter-web")
-    testImplementation("org.springframework.boot:spring-boot-starter-test")
+    // Base project dependencies
+    implementation("org.springframework.boot:spring-boot-starter-actuator:2.5.6")
+    implementation("org.springframework.boot:spring-boot-starter-web:2.5.6")
+    testImplementation("org.springframework.boot:spring-boot-starter-test:2.5.6")
+
+    // R2DBC
+    implementation("org.springframework.boot:spring-boot-starter-data-r2dbc:2.5.6")
+    implementation("org.jetbrains.kotlin:kotlin-reflect") // helps Spring to create Beans
+    implementation("io.projectreactor.kotlin:reactor-kotlin-extensions:1.1.5") // For reactive db
+    runtimeOnly("io.r2dbc:r2dbc-postgresql:0.8.10.RELEASE") // Driver to interact with Postgres DB
+    implementation("name.nkonev.r2dbc-migrate:r2dbc-migrate-spring-boot-starter:1.7.8") // Automates flyway migration
 }
