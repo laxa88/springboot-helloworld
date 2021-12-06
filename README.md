@@ -45,7 +45,9 @@ Misc
 
 ## Todos
 
-- [ ] Fix multi-module config (doesn't work for new devs? Refer: https://github.com/mrclrchtr/gradle-kotlin-spring)
+- [ ] Fix multi-module config (doesn't work for new devs?)
+  - https://github.com/mrclrchtr/gradle-kotlin-spring
+  - https://github.com/emmapatterson/multi-module-spring-boot
 - [ ] Setup database layer
 - [ ] Test database layer
 - [ ] Containerize app and database
