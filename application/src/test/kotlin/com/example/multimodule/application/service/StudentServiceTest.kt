@@ -61,6 +61,11 @@ internal class StudentServiceTest {
         Assertions.assertThat(studentRepository).isNotNull
     }
 
+    /**
+     * Don't use @DirtiesContext because it ultimately recreates a new instance
+     * between tests that mutates the DB, which is basically all repository test.
+     * We should instead use @AfterEach or @AfterAll to manually reset the database.
+     */
     @Test
     fun `should save`() {
         runBlocking {
