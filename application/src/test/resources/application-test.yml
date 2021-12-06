@@ -1,5 +1,7 @@
 spring:
   r2dbc:
-    url: r2dbc:tc:postgresql://localhost:1111/school?TC_IMAGE_TAG=
-    username: postgres
-    password: password
+    url: r2dbc:tc:postgresql:///school?TC_IMAGE_TAG=bullseye
+    # These are not necessary when using :tc, because
+    # Testcontainer will automagically create a db URL.
+    #username: dummyuser
+    #password: dummypass
