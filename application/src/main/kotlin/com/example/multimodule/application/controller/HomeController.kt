@@ -3,6 +3,7 @@ package com.example.multimodule.application.controller
 import com.example.multimodule.application.model.Student
 import com.example.multimodule.application.service.StudentService
 import com.example.multimodule.service.MyService
+import kotlinx.coroutines.flow.toList
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.PathVariable
@@ -22,14 +23,14 @@ class HomeController(
     fun message() = myService.message()
 
     @GetMapping("/students")
-    fun getStudents(): List<Student> =
-        studentService.findAll()
+    suspend fun getStudents(): List<Student> =
+        studentService.findAll().toList()
 
     @GetMapping("/students/{id}")
-    fun getStudentById(@PathVariable id: String): Student? =
+    suspend fun getStudentById(@PathVariable id: Int): Student? =
         studentService.findById(id)
 
     @GetMapping("/students/course/{course}")
-    fun getByCourseName(@PathVariable course: String): List<Student> =
+    suspend fun getByCourseName(@PathVariable course: String): List<Student> =
         studentService.findByCourseName(course)
 }

@@ -25,9 +25,17 @@ dependencies {
     testImplementation("org.springframework.boot:spring-boot-starter-test:2.5.6")
 
     // R2DBC
-    implementation("org.springframework.boot:spring-boot-starter-data-r2dbc:2.5.6")
-    implementation("org.jetbrains.kotlin:kotlin-reflect") // helps Spring to create Beans
-    implementation("io.projectreactor.kotlin:reactor-kotlin-extensions:1.1.5") // For reactive db
+    implementation("org.springframework.boot:spring-boot-starter-data-r2dbc:2.5.6") // basic requirement
+    // implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.5.2-native-mt")
+    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-reactor:1.5.2-native-mt") // for Reactive repos
+    // implementation("org.jetbrains.kotlinx:kotlinx-coroutines-reactive:1.5.2-native-mt")
+    implementation("org.jetbrains.kotlin:kotlin-reflect") // required for Spring to create Beans
+    // implementation("io.projectreactor.kotlin:reactor-kotlin-extensions:1.1.5") // For reactive db
     runtimeOnly("io.r2dbc:r2dbc-postgresql:0.8.10.RELEASE") // Driver to interact with Postgres DB
     implementation("name.nkonev.r2dbc-migrate:r2dbc-migrate-spring-boot-starter:1.7.8") // Automates flyway migration
+}
+
+// Required for tests to be detected and run
+tasks.withType<Test> {
+    useJUnitPlatform()
 }

@@ -9,13 +9,13 @@ class StudentService(
     private val repository: StudentRepository
 ) {
 
-    fun findAll(): List<Student> =
-        repository.findAll().collectList().block() ?: emptyList()
+    suspend fun findAll() =
+        repository.findAll()
 
-    fun findById(id: String): Student? =
-        repository.findById(id).block()
+    suspend fun findById(id: Int) =
+        repository.findById(id)
 
     // Demonstrate custom repository method
-    fun findByCourseName(course: String): List<Student> =
+    suspend fun findByCourseName(course: String): List<Student> =
         repository.findByCourse(course).collectList().block() ?: emptyList()
 }

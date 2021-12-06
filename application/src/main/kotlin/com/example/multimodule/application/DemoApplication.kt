@@ -2,7 +2,6 @@ package com.example.multimodule.application
 
 import org.springframework.boot.autoconfigure.SpringBootApplication
 import org.springframework.boot.runApplication
-import org.springframework.data.r2dbc.repository.config.EnableR2dbcRepositories
 
 /**
  * Reference: https://spring.io/guides/gs/multi-module/
@@ -16,7 +15,6 @@ import org.springframework.data.r2dbc.repository.config.EnableR2dbcRepositories
  * can be detected.
  */
 @SpringBootApplication(scanBasePackages = ["com.example.multimodule"])
-@EnableR2dbcRepositories("com.example.multimodule.application.repository")
 class DemoApplication
 
 fun main(args: Array<String>) {
