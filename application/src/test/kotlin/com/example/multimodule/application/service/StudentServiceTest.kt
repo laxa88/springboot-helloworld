@@ -31,6 +31,9 @@ import org.testcontainers.junit.jupiter.Testcontainers
 internal class StudentServiceTest {
 
     @Autowired
+    lateinit var studentService: StudentService
+
+    @Autowired
     lateinit var studentRepository: StudentRepository
 
     // Note: @Container will recreate a new instance between each tests... Which is slow.
@@ -58,7 +61,19 @@ internal class StudentServiceTest {
 
     @Test
     fun contextLoads() {
+        Assertions.assertThat(studentService).isNotNull
         Assertions.assertThat(studentRepository).isNotNull
+    }
+
+    @Test
+    fun `should get all students`() {
+        runBlocking {
+            // given/when
+            val result = studentService.findAll().toList()
+
+            // then
+            Assertions.assertThat(result.count()).isEqualTo(3)
+        }
     }
 
     /**
@@ -73,10 +88,10 @@ internal class StudentServiceTest {
             val newStudent = Student(id = 3, name = "dName", courseName = "dCourse")
 
             // When
-            studentRepository.save(newStudent)
+            studentService.save(newStudent)
 
             // Then
-            val updated = studentRepository.findById(newStudent.id!!)
+            val updated = studentService.findById(newStudent.id!!)
             Assertions.assertThat(updated).isEqualTo(newStudent)
         }
     }
@@ -88,13 +103,12 @@ internal class StudentServiceTest {
             val student = Student(id = 2, name = "dName2", courseName = "dCourse2")
 
             // When
-            val newStudent = studentRepository.save(student)
+            val newStudent = studentService.save(student)
 
-            val foo = studentRepository.findAll().toList()
-            println("### $foo")
+            val foo = studentService.findAll().toList()
 
             // Then
-            val updated = studentRepository.findById(newStudent.id!!)
+            val updated = studentService.findById(newStudent.id!!)
             Assertions.assertThat(updated).isEqualTo(newStudent)
         }
     }

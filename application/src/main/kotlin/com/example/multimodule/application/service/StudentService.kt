@@ -8,6 +8,8 @@ import org.springframework.stereotype.Service
 class StudentService(
     private val repository: StudentRepository
 ) {
+    suspend fun save(student: Student) =
+        repository.save(student)
 
     suspend fun findAll() =
         repository.findAll()
